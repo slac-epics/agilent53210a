@@ -1,0 +1,10 @@
+# Agilent 53210A frequency counter
+file agilent53210a.template
+{
+pattern {  DEVICE        , PORT    , SCAN  }
+        {  OSC:LR20:20: , "agilFC" , "1 second"      }
+}
+
+# DEVICE: device name
+# PORT: asyn communication port
+# SCAN: refrash rate 
