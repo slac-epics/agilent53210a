@@ -3,7 +3,7 @@ beginScreenProperties
 major 4
 minor 0
 release 1
-x 1358
+x 1248
 y 67
 w 516
 h 269
@@ -159,7 +159,7 @@ x 12
 y 64
 w 484
 h 20
-controlPv "$(DEV):IDENTITY"
+controlPv "$(DEV):FC_IDENTITY"
 format "decimal"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
@@ -295,9 +295,9 @@ beginObjectProperties
 major 4
 minor 1
 release 1
-x 16
+x 140
 y 168
-w 100
+w 44
 h 20
 font "helvetica-bold-r-12.0"
 fontAlign "right"
@@ -315,7 +315,7 @@ beginObjectProperties
 major 4
 minor 1
 release 0
-x 120
+x 188
 y 168
 w 64
 h 20
@@ -325,7 +325,7 @@ offColor index 3
 inconsistentColor index 40
 topShadowColor index 1
 botShadowColor index 13
-controlPv "$(DEV):RESET"
+controlPv "$(DEV):FC_RESET"
 onLabel "Reset!"
 offLabel "Reset"
 labelType "literal"
@@ -351,8 +351,8 @@ selectColor index 1
 inconsistentColor index 14
 topShadowColor index 1
 botShadowColor index 14
-controlPv "$(DEV):SET_IMPEDANCE"
-indicatorPv "$(DEV):GET_IMPEDANCE"
+controlPv "$(DEV):FC_SET_IMPEDANCE"
+indicatorPv "$(DEV):FC_GET_IMPEDANCE"
 font "helvetica-medium-r-14.0"
 orientation "horizontal"
 endObjectProperties
@@ -393,8 +393,8 @@ selectColor index 1
 inconsistentColor index 14
 topShadowColor index 1
 botShadowColor index 14
-controlPv "$(DEV):SET_COUPLING"
-indicatorPv "$(DEV):GET_COUPLING"
+controlPv "$(DEV):FC_SET_COUPLING"
+indicatorPv "$(DEV):FC_GET_COUPLING"
 font "helvetica-medium-r-14.0"
 orientation "horizontal"
 endObjectProperties
@@ -449,7 +449,7 @@ x 348
 y 164
 w 68
 h 20
-controlPv "$(DEV):SET_TRIG_LEVEL"
+controlPv "$(DEV):FC_SET_TRIG_LEVEL"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
 fgColor index 25
@@ -492,7 +492,7 @@ x 416
 y 164
 w 68
 h 20
-controlPv "$(DEV):GET_TRIG_LEVEL"
+controlPv "$(DEV):FC_GET_TRIG_LEVEL"
 format "decimal"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
@@ -539,7 +539,7 @@ x 348
 y 192
 w 68
 h 20
-controlPv "$(DEV):SET_TRIG_PERCENT"
+controlPv "$(DEV):FC_SET_TRIG_PERCENT"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
 fgColor index 25
@@ -562,7 +562,7 @@ x 416
 y 192
 w 68
 h 20
-controlPv "$(DEV):GET_TRIG_PERCENT"
+controlPv "$(DEV):FC_GET_TRIG_PERCENT"
 format "decimal"
 font "helvetica-bold-r-12.0"
 fontAlign "center"
@@ -595,8 +595,8 @@ selectColor index 1
 inconsistentColor index 14
 topShadowColor index 1
 botShadowColor index 14
-controlPv "$(DEV):SET_AUTO_LEVEL"
-indicatorPv "$(DEV):GET_AUTO_LEVEL"
+controlPv "$(DEV):FC_SET_AUTO_LEVEL"
+indicatorPv "$(DEV):FC_GET_AUTO_LEVEL"
 font "helvetica-medium-r-14.0"
 orientation "horizontal"
 endObjectProperties
@@ -657,8 +657,8 @@ selectColor index 1
 inconsistentColor index 14
 topShadowColor index 1
 botShadowColor index 14
-controlPv "$(DEV):SET_NOISE_REJ"
-indicatorPv "$(DEV):GET_NOISE_REJ"
+controlPv "$(DEV):FC_SET_NOISE_REJ"
+indicatorPv "$(DEV):FC_GET_NOISE_REJ"
 font "helvetica-medium-r-14.0"
 orientation "horizontal"
 endObjectProperties
@@ -678,11 +678,56 @@ onColor index 1
 offColor index 1
 topShadowColor index 1
 botShadowColor index 14
-controlPv "$(DEV):UPDATE.PROC"
+controlPv "$(DEV):FC_UPDATE.PROC"
 pressValue "1"
 onLabel "Update"
 offLabel "Update"
 3d
 font "helvetica-medium-r-14.0"
+endObjectProperties
+
+# (Static Text)
+object activeXTextClass
+beginObjectProperties
+major 4
+minor 1
+release 1
+x 20
+y 168
+w 48
+h 20
+font "helvetica-bold-r-12.0"
+fontAlign "right"
+fgColor index 14
+bgColor index 4
+useDisplayBg
+value {
+  "Error"
+}
+endObjectProperties
+
+# (Text Monitor)
+object activeXTextDspClass:noedit
+beginObjectProperties
+major 4
+minor 7
+release 0
+x 68
+y 168
+w 68
+h 20
+controlPv "$(DEV):FC_ERROR"
+format "string"
+font "helvetica-bold-r-12.0"
+fontAlign "center"
+fgColor index 15
+fgAlarm
+bgColor index 12
+nullColor index 14
+smartRefresh
+useHexPrefix
+showUnits
+newPos
+objType "monitors"
 endObjectProperties
 

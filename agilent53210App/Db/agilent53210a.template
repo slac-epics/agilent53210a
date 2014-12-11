@@ -3,27 +3,54 @@
 #! DBDEND
 
 
-record(stringin, "$(DEVICE)IDENTITY") {
+record(stringin, "$(DEVICE)FC_IDENTITY") {
   field(DESC, "Identification")
   field(DTYP, "stream")
   field(INP, "@agilent53210a.proto.db GET_IDN $(PORT)")
+  field(PINI, YES)
 }
 
-record(bo, "$(DEVICE)RESET") {
+record(bo, "$(DEVICE)FC_RESET") {
   field(DESC, "Reset command")
   field(DTYP, "stream")
   field(OUT, "@agilent53210a.proto.db RESET $(PORT)")
-  field(FLNK, "$(DEVICE)UPDATE")
+  field(FLNK, "$(DEVICE)FC_UPDATE")
 }
 
-record(fanout, "$(DEVICE)UPDATE") {
+record(stringin, "$(DEVICE)FC_ERROR") {
+  field(DESC, "Read error queue")
+  field(DTYP, "stream")
+  field(INP, "@agilent53210a.proto.db GET_ERROR $(PORT)")
+  field(PINI, YES)
+}
+
+# When this is set, updating all *GET_* after next frequency reading
+record(bo, "$(DEVICE)FC_UPDATE") {
+  field(DESC, "Set this to read all settings")
+}
+
+# No need for continuous updates, so trigger an update then disable
+record(seq, "$(DEVICE)FC_UPDATE_SEQ") {
+  field(DESC, "Start update")
+  field(DISV, 0)
+  field(SDIS, "$(DEVICE)FC_UPDATE")
+  field(VAL, "1")
+  field(DOL1, "1")
+  field(LNK1, "$(DEVICE)FC_UPDATE_FAN PP")
+  field(DLY2, "0.5")
+  field(DOL2, "0")
+  field(LNK2, "$(DEVICE)FC_UPDATE PP")
+}
+
+record(fanout, "$(DEVICE)FC_UPDATE_FAN") {
   field(DESC, "Update all settings")
-  field(LNK1, "$(DEVICE)GET_IMPEDANCE")
-  field(LNK2, "$(DEVICE)GET_TRIG_LEVEL")
-  field(LNK3, "$(DEVICE)GET_TRIG_PERCENT")
-  field(LNK4, "$(DEVICE)GET_AUTO_LEVEL")
-  field(LNK5, "$(DEVICE)GET_COUPLING")
-  field(LNK6, "$(DEVICE)GET_NOISE_REJ")
+  field(LNK1, "$(DEVICE)FC_GET_IMPEDANCE")
+  field(LNK2, "$(DEVICE)FC_GET_TRIG_LEVEL")
+  field(LNK3, "$(DEVICE)FC_GET_TRIG_PERCENT")
+  field(LNK4, "$(DEVICE)FC_ERROR")
+  field(LNK5, "$(DEVICE)FC_GET_COUPLING")
+  field(LNK6, "$(DEVICE)FC_GET_NOISE_REJ")
+  field(PINI, YES)
 }
 
 record(ai, "$(DEVICE)FREQ_RBCK_RAW") {
@@ -33,6 +60,7 @@ record(ai, "$(DEVICE)FREQ_RBCK_RAW") {
   field(INP, "@agilent53210a.proto.db GET_FREQ $(PORT)")
   field(EGU, "Hz")
   field(PREC, "3")
+  field(FLNK, "$(DEVICE)FC_UPDATE_SEQ")
   info(autosaveFields, "DESC EGU HHSV HIGH HIHI HSV LLSV LOLO LOW LSV PREC")
 }
 
@@ -55,7 +83,7 @@ record(ai, "$(DEVICE)FREQ_RBCK") {
   info(autosaveFields, "DESC EGU HHSV HIGH HIHI HSV LLSV LOLO LOW LSV PREC")
 }
 
-record(bi, "$(DEVICE)GET_IMPEDANCE") {
+record(bi, "$(DEVICE)FC_GET_IMPEDANCE") {
   field(DESC, "Input Impedance")
   field(DTYP, "stream")
   field(INP, "@agilent53210a.proto.db GET_IMPEDANCE $(PORT)")
@@ -64,17 +92,17 @@ record(bi, "$(DEVICE)GET_IMPEDANCE") {
   info(autosaveFields, "ZSV OSV")
 }
 
-record(bo, "$(DEVICE)SET_IMPEDANCE") {
+record(bo, "$(DEVICE)FC_SET_IMPEDANCE") {
   field(DESC, "Input Impedance")
   field(DTYP, "stream")
   field(OUT, "@agilent53210a.proto.db SET_IMPEDANCE $(PORT)")
   field(ZNAM, "1M Ohm")
   field(ONAM, "50 Ohm")
-  field(FLNK, "$(DEVICE)GET_IMPEDANCE")
+  field(FLNK, "$(DEVICE)FC_GET_IMPEDANCE")
   info(autosaveFields, "VAL ZSV OSV")
 }
 
-record(ai, "$(DEVICE)GET_TRIG_LEVEL") {
+record(ai, "$(DEVICE)FC_GET_TRIG_LEVEL") {
   field(DESC, "Trigger level")
   field(DTYP, "stream")
   field(INP, "@agilent53210a.proto.db GET_TRIG_LEVEL $(PORT)")
@@ -83,17 +111,17 @@ record(ai, "$(DEVICE)GET_TRIG_LEVEL") {
   info(autosaveFields, "DESC EGU HHSV HIGH HIHI HSV LLSV LOLO LOW LSV PREC")
 }
 
-record(ao, "$(DEVICE)SET_TRIG_LEVEL") {
+record(ao, "$(DEVICE)FC_SET_TRIG_LEVEL") {
   field(DESC, "Trigger level")
   field(DTYP, "stream")
   field(OUT, "@agilent53210a.proto.db SET_TRIG_LEVEL $(PORT)")
   field(EGU, "V")
   field(PREC, "3")
-  field(FLNK, "$(DEVICE)GET_TRIG_LEVEL")
+  field(FLNK, "$(DEVICE)FC_GET_TRIG_LEVEL")
   info(autosaveFields, "VAL DESC EGU HHSV HIGH HIHI HSV LLSV LOLO LOW LSV PREC")
 }
 
-record(ai, "$(DEVICE)GET_TRIG_PERCENT") {
+record(ai, "$(DEVICE)FC_GET_TRIG_PERCENT") {
   field(DESC, "Trigger percent")
   field(DTYP, "stream")
   field(INP, "@agilent53210a.proto.db GET_TRIG_PERCENT $(PORT)")
@@ -102,38 +130,39 @@ record(ai, "$(DEVICE)GET_TRIG_PERCENT") {
   info(autosaveFields, "DESC EGU HHSV HIGH HIHI HSV LLSV LOLO LOW LSV PREC")
 }
 
-record(ao, "$(DEVICE)SET_TRIG_PERCENT") {
+record(ao, "$(DEVICE)FC_SET_TRIG_PERCENT") {
   field(DESC, "Trigger percent")
   field(DTYP, "stream")
   field(OUT, "@agilent53210a.proto.db SET_TRIG_PERCENT $(PORT)")
   field(EGU, "V")
   field(PREC, "3")
-  field(FLNK, "$(DEVICE)GET_TRIG_PERCENT")
+  field(FLNK, "$(DEVICE)FC_GET_TRIG_PERCENT")
   info(autosaveFields, "VAL DESC EGU HHSV HIGH HIHI HSV LLSV LOLO LOW LSV PREC")
 }
 
-record(mbbi, "$(DEVICE)GET_AUTO_LEVEL") {
+record(mbbi, "$(DEVICE)FC_GET_AUTO_LEVEL") {
   field(DESC, "Input AUTO_LEVEL")
   field(DTYP, "stream")
   field(INP, "@agilent53210a.proto.db GET_AUTO_LEVEL $(PORT)")
   field(ZRST, "OFF")
   field(ONST, "ON")
   field(TWST, "ONCE")
+  field(PINI, YES)
 	info(autosaveFields, "UNSV COSV ZRSV ONSV TWSV")
 }
 
-record(mbbo, "$(DEVICE)SET_AUTO_LEVEL") {
+record(mbbo, "$(DEVICE)FC_SET_AUTO_LEVEL") {
   field(DESC, "Input AUTO_LEVEL")
   field(DTYP, "stream")
   field(OUT, "@agilent53210a.proto.db SET_AUTO_LEVEL $(PORT)")
   field(ZRST, "OFF")
   field(ONST, "ON")
   field(TWST, "ONCE")
-  field(FLNK, "$(DEVICE)GET_AUTO_LEVEL")
+  field(FLNK, "$(DEVICE)FC_GET_AUTO_LEVEL")
 	info(autosaveFields, "VAL UNSV COSV ZRSV ONSV TWSV")
 }
 
-record(bi, "$(DEVICE)GET_COUPLING") {
+record(bi, "$(DEVICE)FC_GET_COUPLING") {
   field(DESC, "Input Coupling")
   field(DTYP, "stream")
   field(INP, "@agilent53210a.proto.db GET_COUPLING $(PORT)")
@@ -142,17 +171,17 @@ record(bi, "$(DEVICE)GET_COUPLING") {
   info(autosaveFields, "ZSV OSV")
 }
 
-record(bo, "$(DEVICE)SET_COUPLING") {
+record(bo, "$(DEVICE)FC_SET_COUPLING") {
   field(DESC, "Input Coupling")
   field(DTYP, "stream")
   field(OUT, "@agilent53210a.proto.db SET_COUPLING $(PORT)")
   field(ZNAM, "AC")
   field(ONAM, "DC")
-  field(FLNK, "$(DEVICE)GET_COUPLING")
+  field(FLNK, "$(DEVICE)FC_GET_COUPLING")
   info(autosaveFields, "VAL ZSV OSV")
 }
 
-record(bi, "$(DEVICE)GET_NOISE_REJ") {
+record(bi, "$(DEVICE)FC_GET_NOISE_REJ") {
   field(DESC, "Noise rejection")
   field(DTYP, "stream")
   field(INP, "@agilent53210a.proto.db GET_NOISE_REJ $(PORT)")
@@ -161,13 +190,13 @@ record(bi, "$(DEVICE)GET_NOISE_REJ") {
   info(autosaveFields, "ZSV OSV")
 }
 
-record(bo, "$(DEVICE)SET_NOISE_REJ") {
+record(bo, "$(DEVICE)FC_SET_NOISE_REJ") {
   field(DESC, "Noise rejection")
   field(DTYP, "stream")
   field(OUT, "@agilent53210a.proto.db SET_NOISE_REJ $(PORT)")
   field(ZNAM, "OFF")
   field(ONAM, "ON")
-  field(FLNK, "$(DEVICE)GET_NOISE_REJ")
+  field(FLNK, "$(DEVICE)FC_GET_NOISE_REJ")
   info(autosaveFields, "VAL ZSV OSV")
 }
 
