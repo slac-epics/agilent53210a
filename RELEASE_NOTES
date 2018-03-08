@@ -8,6 +8,9 @@
 #
 #==============================================================
 #
+R1.1.0, 2018-Mar-08, Joao Rodrigues	(joaoprod):
+     Changes to new git workflow and epics 3.15	
+
 agilent53210a-R1-0-1, 2014-Dec-11, Garth Brown	(gwbrown):
      Added error queue read. New sequence to prevent reading settings
      during frequency reads, since they seem to conflict.
