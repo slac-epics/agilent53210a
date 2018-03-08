@@ -10,9 +10,9 @@ include $(TOP)/configure/CONFIG
 #----------------------------------------------------
 # Create and install (or just install)
 # databases, templates, substitutions like this
-DB_INSTALLS += agilent53210a.proto.db
-DB_INSTALLS += agilent53210a.template
-DB_INSTALLS += agilent53210aEX.substitutions
+DB_INSTALLS += $(TOP)/agilent53210App/Db/agilent53210a.proto.db
+DB_INSTALLS += $(TOP)/agilent53210App/Db/agilent53210a.template
+DB_INSTALLS += $(TOP)/agilent53210App/Db/agilent53210aEX.substitutions
 DB += agilent53210aEX.db
 
 include $(TOP)/configure/RULES
